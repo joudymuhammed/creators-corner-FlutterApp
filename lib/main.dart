@@ -1,3 +1,4 @@
+import 'package:creators_corner/Provider/ProductsProvider.dart';
 import 'package:flutter/material.dart';
 import 'Component/NavBar.dart';
 import 'Provider/CartProvider.dart';
@@ -18,6 +19,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => OrdersProvider()), // Add OrdersProvider
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()), // Add the FavoritesProvider
+        ChangeNotifierProvider(create: (context) => ProductProvider(),)
       ],
       child: MyApp(),
     ),

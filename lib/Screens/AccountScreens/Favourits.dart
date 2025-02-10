@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../Models/ProductsModel.dart';
 import '../ProductsDetails.dart';
 
 class FavouritesPage extends StatefulWidget {
-  final List<Map<String, dynamic>> favoriteProducts;
+  final List<Product> favoriteProducts;
 
   const FavouritesPage({Key? key, required this.favoriteProducts}) : super(key: key);
 
@@ -11,7 +12,7 @@ class FavouritesPage extends StatefulWidget {
 }
 
 class _FavouritesPageState extends State<FavouritesPage> {
-  late List<Map<String, dynamic>> favoriteProducts;
+  late List<Product> favoriteProducts;
 
   @override
   void initState() {
@@ -50,9 +51,9 @@ class _FavouritesPageState extends State<FavouritesPage> {
               ],
             ),
             child: ListTile(
-              leading: Image.asset(product['imagePath'], width: 50, height: 50, fit: BoxFit.cover),
-              title: Text(product['name']),
-              subtitle: Text(product['price']),
+              leading: Image.asset('assets/images/default_product.png', width: 50, height: 50, fit: BoxFit.cover),
+              title: Text(product.name),
+              subtitle: Text('${product.price} LE'),
               trailing: IconButton(
                 icon: const Icon(Icons.favorite, color: Colors.red),
                 onPressed: () => deleteProduct(index), // Deletes the product

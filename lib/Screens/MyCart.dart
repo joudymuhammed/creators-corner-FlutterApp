@@ -1,8 +1,8 @@
-import 'package:creators_corner/Screens/CheckOut.dart';
-import 'package:creators_corner/Provider/CartProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../Provider/CartProvider.dart';
 import '../Component/Item.dart';
+import '../Screens/CheckOut.dart';
 
 class MyCart extends StatefulWidget {
   const MyCart({Key? key}) : super(key: key);
@@ -53,24 +53,22 @@ class _MyCartState extends State<MyCart> {
                     Expanded(
                       child: Consumer<CartProvider>(
                         builder: (context, cartProvider, child) {
-                          return cartProvider.cartItems.isEmpty ? const Center(
+                          return cartProvider.cartItems.isEmpty
+                              ? const Center(
                             child: Text(
                               "Your cart is empty!",
                               style: TextStyle(fontSize: 18),
                             ),
                           )
                               : ListView.builder(
-                                itemCount: cartProvider.cartItems.length,
-                                itemBuilder: (context, index) {
-                                final cartItem = cartProvider.cartItems[index];
-                                final product = cartItem['product'];
-                                final quantity = cartItem['quantity'];
+                            itemCount: cartProvider.cartItems.length,
+                            itemBuilder: (context, index) {
+                              final cartItem = cartProvider.cartItems[index];
 
-                                return Column(
-                                  children: [
+                              return Column(
+                                children: [
                                   Item(
-                                    product: product,
-                                    quantity: quantity,
+                                    cartItem: cartItem,
                                     onRemove: () {
                                       cartProvider.removeFromCart(index);
                                     },
@@ -78,7 +76,7 @@ class _MyCartState extends State<MyCart> {
                                   const SizedBox(height: 20),
                                 ],
                               );
-                              },
+                            },
                           );
                         },
                       ),

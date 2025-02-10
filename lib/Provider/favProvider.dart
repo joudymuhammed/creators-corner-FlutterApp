@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import '../Models/ProductsModel.dart';
 
 class FavoritesProvider with ChangeNotifier {
-  List<Map<String, dynamic>> _favoriteProducts = [];
+  List<Product> _favoriteProducts = [];
 
-  List<Map<String, dynamic>> get favoriteProducts => _favoriteProducts;
+  List<Product> get favoriteProducts => _favoriteProducts;
 
-  void addFavorite(Map<String, dynamic> product) {
+  void addFavorite(Product product) {
     _favoriteProducts.add(product);
     notifyListeners();
   }
 
-  void removeFavorite(Map<String, dynamic> product) {
-    _favoriteProducts.remove(product);
+  void removeFavorite(Product product) {
+    _favoriteProducts.removeWhere((fav) => fav.id == product.id);
     notifyListeners();
+  }
+
+  bool isFavorite(Product product) {
+    return _favoriteProducts.any((fav) => fav.id == product.id);
   }
 }

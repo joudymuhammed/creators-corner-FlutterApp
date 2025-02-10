@@ -56,7 +56,7 @@ class AccountScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FavouritesPage(favoriteProducts: favoritesProvider.favoriteProducts),
+                          builder: (context) => FavouritesPage(favoriteProducts: [], ),
                         ),
                       );
                     } else if (listItems[index]["title"] == "Your Orders") {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Component/bottom.dart';
-import 'AccountScreens/Favourits.dart';
+import '../Provider/favProvider.dart';
+import '../Models/ProductsModel.dart';
+import '../Services/ProductsService.dart';
 import 'ProductsDetails.dart';
-import '../Provider/favProvider.dart'; // Import the provider
 
 class HomeScreen extends StatefulWidget {
   final String? selectedBrand;
@@ -16,158 +17,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int selectedBrandIndex = 0;
-
-  final List<String> images = [
-    'Images/Screenshot 2024-09-24 124055.png',
-    'Images/Screenshot 2024-09-24 125503.png',
-    'Images/460355975_1044180807194026_2928826092189388217_n.jpg',
-    'Images/Picsart_24-10-12_15-59-45-546.png',
-    'Images/Picsart_24-10-12_16-05-14-369.png'
-  ];
-
-  final List<List<Map<String, dynamic>>> brands = [
-    // Brand 0
-    [
-      {
-        'brand':'TWENTY SEVEN',
-        'name': 'Pink Puff Tee',
-        'price': 'LE 450.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 124602.png',
-        'isLeft': true,
-      },
-      {
-        'brand':'TWENTY SEVEN',
-        'name': 'Persona Tee',
-        'price': 'LE 395.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-04-30 191728.png',
-        'isLeft': false,
-      },
-      {
-        'brand':'TWENTY SEVEN',
-        'name': 'Forward Forever Tee',
-        'price': 'LE 400.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 140904.png',
-        'isLeft': true,
-      },
-      {
-        'brand':'TWENTY SEVEN',
-        'name': 'Pink Short',
-        'price': 'LE 400.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 124948.png',
-        'isLeft': false,
-      },
-
-    ],
-    // Brand 1
-    [
-      {
-        'brand':'Gray',
-        'name': 'SG Pink',
-        'price': 'LE 1,350.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 125538.png',
-        'isLeft': true,
-      },
-      {
-        'brand':'Gray',
-        'name': 'Black G Tee',
-        'price': 'LE 350.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 125638.png',
-        'isLeft': false,
-      },
-      {
-        'brand':'Gray ',
-        'name': 'Black jort',
-        'price': 'LE 700.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 125727.png',
-        'isLeft': true,
-      },
-    ],
-    // Brand 2
-    [
-      {
-        'brand':'Vice',
-        'name': 'SG Pink',
-        'price': 'LE 450.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 125307.png',
-        'isLeft': true,
-      },
-      {
-        'brand':'Vice',
-        'name': 'Vice Angel Tee Blue & White',
-        'price': 'LE 450.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 125114.png',
-        'isLeft': false,
-      },
-      {
-        'brand':'Vice',
-        'name': 'Vice Cap نرجسي',
-        'price': 'LE 300.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 124509.png',
-        'isLeft': true,
-      },
-    ],
-    // Brand 3
-    [
-      {
-        'brand':'Decked Out',
-        'name': 'Knite Shirt in black',
-        'price': 'LE 1,350.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-10-12 180625.png',
-        'isLeft': true,
-      },
-      {
-        'brand':'Decked Out',
-        'name': 'Knite shirt in green ',
-        'price': 'LE 350.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-04-30 191728.png',
-        'isLeft': false,
-      },
-      {
-        'brand':'Decked Out',
-        'name': 'DO Knite Shirt',
-        'price': 'LE 700.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 140904.png',
-        'isLeft': true,
-      },
-    ],
-    // Brand 4
-    [
-      {
-        'brand':'Laqta',
-        'name': 'Black last shot T-shirt',
-        'price': 'LE 450.00 EGP',
-        'imagePath': 'Images/Capturesdsd.PNG',
-        'isLeft': true,
-      },
-      {
-        'brand':'Laqta',
-        'name': '',
-        'price': 'LE 700.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-04-30 191728.png',
-        'isLeft': false,
-      },
-      {
-        'brand':'Laqta',
-        'name': 'White laqta shirt',
-        'price': 'LE 350.00 EGP',
-        'imagePath': 'Images/Screenshot 2024-09-24 140904.png',
-        'isLeft': true,
-      },
-    ],
-  ];
+  late Future<List<Product>> _futureProducts;
 
   @override
   void initState() {
     super.initState();
-    if (widget.selectedBrandIndex != null) {
-      selectedBrandIndex = widget.selectedBrandIndex!;
-    }
+    _futureProducts = ProductService().fetchProducts();
   }
 
   @override
   Widget build(BuildContext context) {
-    final favoritesProvider = Provider.of<FavoritesProvider>(context); // Access the provider
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -181,16 +41,30 @@ class _HomeScreenState extends State<HomeScreen> {
             Image.asset("Images/Super_Stars-removebg.png", height: 134, width: 190),
             _buildSearchBar(),
             const SizedBox(height: 10),
-            _buildBrandSelector(),
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    for (var product in brands[selectedBrandIndex])
-                      _buildProductRow(product, favoritesProvider),
-                    Bottom() // Your bottom widget
-                  ],
-                ),
+              child: FutureBuilder<List<Product>>(
+                future: _futureProducts,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text("No products available"));
+                  }
+
+                  List<Product> products = snapshot.data!;
+
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < products.length; i++)
+                          _buildProductRow(products[i], i, favoritesProvider), // Correct order
+                        Bottom(),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -218,39 +92,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildBrandSelector() {
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  selectedBrandIndex = index;
-                });
-              },
-              child: CircleAvatar(
-                backgroundImage: AssetImage(images[index]),
-                radius: 40,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildProductRow(Map<String, dynamic> product, FavoritesProvider favoritesProvider) {
-    bool isFavorite = favoritesProvider.favoriteProducts.contains(product);
+  Widget _buildProductRow(Product product, int index, FavoritesProvider favoritesProvider) {
+    bool isLeft = index % 2 == 0; // Alternate left-right layout
 
     return Row(
-      mainAxisAlignment: product['isLeft'] ? MainAxisAlignment.start : MainAxisAlignment.end,
+      mainAxisAlignment: isLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
       children: [
-        if (product['isLeft']) ...[
+        if (isLeft) ...[
           _buildProductContainer(product, favoritesProvider),
           const SizedBox(width: 10),
           _buildProductDetails(product),
@@ -263,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductContainer(Map<String, dynamic> product, FavoritesProvider favoritesProvider) {
+  Widget _buildProductContainer(Product product, FavoritesProvider favoritesProvider) {
     bool isFavorite = favoritesProvider.favoriteProducts.contains(product);
 
     return Container(
@@ -279,7 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(product['imagePath'], height: 125, width: 120, fit: BoxFit.cover),
+           // Image.network(product.imagePath, height: 125, width: 120, fit: BoxFit.cover),
+
+            Image.asset('Images/Screenshot 2024-04-30 191728.png', height: 125, width: 120, fit: BoxFit.cover),
             const SizedBox(height: 5),
             IconButton(
               onPressed: () {
@@ -304,12 +154,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductDetails(Map<String, dynamic> product) {
+
+  Widget _buildProductDetails(Product product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(product['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-        Text(product['price'], style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text('${product.price.toStringAsFixed(2)} EGP'), // Ensure it's displayed correctly
       ],
     );
   }

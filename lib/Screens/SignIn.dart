@@ -1,5 +1,4 @@
-import 'package:creators_corner/Component/HomeScreenWrapper.dart';
-import 'package:creators_corner/Screens/Home.dart';
+
 import 'package:flutter/material.dart';
 import '../main.dart';
 import 'Registeration.dart';
