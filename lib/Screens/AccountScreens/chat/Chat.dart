@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Chating.dart'; // Ensure this is the correct import for your ChatScreen
+import 'Chating.dart';
 
 class ChatListScreen extends StatelessWidget {
   final List<Map<String, String>> chatData = [
@@ -7,7 +7,7 @@ class ChatListScreen extends StatelessWidget {
       "name": "Twenty Seven",
       "lastMessage": "Check out our new collection!",
       "time": "10:30 AM",
-      "avatar": "https://via.placeholder.com/150" // Placeholder image URL
+      "avatar": "https://via.placeholder.com/150"
     },
     {
       "name": "Vice",
@@ -54,7 +54,6 @@ class ChatListScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.grey),
               ),
               onTap: () {
-                // Navigate to ChatScreen when a chat is tapped
                 Navigator.push(
                   context,
                   MaterialPageRoute(

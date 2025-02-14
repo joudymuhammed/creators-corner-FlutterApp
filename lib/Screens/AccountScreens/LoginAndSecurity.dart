@@ -1,3 +1,4 @@
+import 'package:creators_corner/Screens/ForgetPassword.dart';
 import 'package:flutter/material.dart';
 
 class LoginAndSecurityPage extends StatefulWidget {
@@ -32,7 +33,8 @@ class _LoginAndSecurityPageState extends State<LoginAndSecurityPage> {
               subtitle: "********",
               icon: Icons.lock,
               onTap: () {
-                // Navigate to change password screen
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ForgetPasswordScreen(),));
               },
             ),
             _buildDivider(),

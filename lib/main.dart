@@ -1,8 +1,10 @@
+import 'package:creators_corner/Provider/LoginProvider.dart';
 import 'package:creators_corner/Provider/ProductsProvider.dart';
 import 'package:flutter/material.dart';
 import 'Component/NavBar.dart';
 import 'Provider/CartProvider.dart';
 import 'Provider/OrderProvider.dart';
+import 'Provider/RegProvider.dart';
 import 'Provider/favProvider.dart';
 import 'Screens/Account.dart';
 import 'Screens/Browse.dart';
@@ -11,15 +13,21 @@ import 'Screens/MyCart.dart';
 import 'Screens/Search.dart';
 import 'Screens/Signin.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+//
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => OrdersProvider()), // Add OrdersProvider
         ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => FavoritesProvider()), // Add the FavoritesProvider
-        ChangeNotifierProvider(create: (context) => ProductProvider(),)
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (context) => ProductProvider(),),
+        ChangeNotifierProvider(create: (context) => RegProvider() ,),
+        ChangeNotifierProvider(create: (context) => LoginProvider() ,)
+
       ],
       child: MyApp(),
     ),
@@ -62,7 +70,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex], // Display the selected screen
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomAppBar(
         child: Stack(
           clipBehavior: Clip.none,
@@ -94,7 +102,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                       isSelected: _selectedIndex == 1,
                       onTap: () => _onItemTapped(1),
                     ),
-                    SizedBox(width: 60), // Spacer for the center Home button
+                    SizedBox(width: 60),
                     BottomNavItem(
                       icon: Icons.shopping_cart,
                       label: 'Cart',

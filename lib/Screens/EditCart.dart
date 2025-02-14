@@ -45,7 +45,7 @@ class _EditCartState extends State<EditCart> {
             Row(
               children: [
                 // Product Image
-                Image.asset(
+                Image.network(
                   widget.image,
                   width: 100,
                   height: 100,

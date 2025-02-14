@@ -1,41 +1,21 @@
 import 'package:flutter/material.dart';
-import '../../Models/ProductsModel.dart';
+import 'package:provider/provider.dart';
+import '../../Provider/favProvider.dart';
 import '../ProductsDetails.dart';
 
-class FavouritesPage extends StatefulWidget {
-  final List<Product> favoriteProducts;
-
-  const FavouritesPage({Key? key, required this.favoriteProducts}) : super(key: key);
-
-  @override
-  _FavouritesPageState createState() => _FavouritesPageState();
-}
-
-class _FavouritesPageState extends State<FavouritesPage> {
-  late List<Product> favoriteProducts;
-
-  @override
-  void initState() {
-    super.initState();
-    favoriteProducts = widget.favoriteProducts;
-  }
-
-  void deleteProduct(int index) {
-    setState(() {
-      favoriteProducts.removeAt(index);
-    });
-  }
-
+class FavouritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text("Favorites")),
-      body: favoriteProducts.isEmpty
+      body: favoritesProvider.favoriteProducts.isEmpty
           ? const Center(child: Text("No favorite products yet."))
           : ListView.builder(
-        itemCount: favoriteProducts.length,
+        itemCount: favoritesProvider.favoriteProducts.length,
         itemBuilder: (context, index) {
-          var product = favoriteProducts[index];
+          var product = favoritesProvider.favoriteProducts[index];
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
             decoration: BoxDecoration(
@@ -51,17 +31,33 @@ class _FavouritesPageState extends State<FavouritesPage> {
               ],
             ),
             child: ListTile(
-              leading: Image.asset('assets/images/default_product.png', width: 50, height: 50, fit: BoxFit.cover),
+              leading: Image.network(
+                product.image,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    'assets/images/default_product.png',
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
+
               title: Text(product.name),
               subtitle: Text('${product.price} LE'),
               trailing: IconButton(
                 icon: const Icon(Icons.favorite, color: Colors.red),
-                onPressed: () => deleteProduct(index), // Deletes the product
+                onPressed: () {
+                  favoritesProvider.removeFavorite(product);
+                },
               ),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Productsdetails(product: product)),
+                  MaterialPageRoute(builder: (context) => ProductsDetails(product: product)),
                 );
               },
             ),

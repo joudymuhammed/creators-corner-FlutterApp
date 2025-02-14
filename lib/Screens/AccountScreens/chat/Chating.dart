@@ -20,7 +20,6 @@ class _ChatScreenState extends State<ChatScreen> {
           "sender": "You",
           "message": messageController.text,
         });
-        // Simulate a response from the brand
         messages.add({
           "sender": widget.chatTitle,
           "message": "Thank you for your message! We will get back to you shortly.",

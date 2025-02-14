@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Models/CartItem.dart';
+import 'CartItem.dart';
 import '../Screens/EditCart.dart';
 import '../Screens/CheckOut.dart';
 
@@ -37,8 +37,8 @@ class Item extends StatelessWidget {
               child: Row(
                 children: [
                   CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage('Images/Screenshot 2024-04-30 191728.png'),
+                    radius: 43,
+                    backgroundImage: NetworkImage(cartItem.product.image),
                   ),
                   const SizedBox(width: 20),
                   Padding(
@@ -78,50 +78,58 @@ class Item extends StatelessWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete, color: Colors.red,size: 30,),
                     onPressed: onRemove,
                   ),
                 ],
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffFFC3C3),
-                  ),
-                  child: const Text("Edit", style: TextStyle(color: Colors.white)),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditCart(
-                          name: cartItem.product.name,
-                        //  image: cartItem.product.image,
-                          image: 'Images/Screenshot 2024-04-30 191728.png',
-                          price: cartItem.product.price.toString(),
-                          brand: cartItem.product.name,
-                          quantity: cartItem.quantity,
-                        ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 120,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffFFC3C3),
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffFF5454),
+                      child: const Text("Edit", style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditCart(
+                              name: cartItem.product.name,
+                             image: cartItem.product.image,
+                              price: cartItem.product.price.toString(),
+                              brand: cartItem.product.name,
+                              quantity: cartItem.quantity,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  child: const Text("Checkout", style: TextStyle(color: Colors.white)),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CheckOutScreen()),
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(width: 20),
+                  Container(
+                    width: 120,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffFF5454),
+                      ),
+                      child: const Text("Checkout", style: TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CheckOutScreen()),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

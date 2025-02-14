@@ -32,15 +32,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFD6D6D6),
-        title: Text(widget.selectedBrand ?? 'Brands'),
+        title: Text(widget.selectedBrand ?? 'Brands', style: TextStyle(color: Colors.black)),
+        elevation: 0,
+        centerTitle: true,
       ),
       body: Container(
-        color: Colors.white,
         child: Column(
           children: [
-            Image.asset("Images/Super_Stars-removebg.png", height: 134, width: 190),
+            const SizedBox(height: 10),
+            Image.asset("Images/Super_Stars-removebg.png", height: 100),
             _buildSearchBar(),
             const SizedBox(height: 10),
+            _buildBrandRow(),
+            const SizedBox(height: 15),
             Expanded(
               child: FutureBuilder<List<Product>>(
                 future: _futureProducts,
@@ -59,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         for (int i = 0; i < products.length; i++)
-                          _buildProductRow(products[i], i, favoritesProvider), // Correct order
+                          _buildProductRow(products[i], i, favoritesProvider),
                         Bottom(),
                       ],
                     ),
@@ -74,9 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      height: 45,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextFormField(
         decoration: InputDecoration(
           hintText: 'Search Products',
@@ -84,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           filled: true,
           fillColor: Colors.grey[200],
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(25),
             borderSide: BorderSide.none,
           ),
         ),
@@ -92,61 +95,93 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildProductRow(Product product, int index, FavoritesProvider favoritesProvider) {
-    bool isLeft = index % 2 == 0; // Alternate left-right layout
+  Widget _buildBrandRow() {
+    List<String> brandLogos = [
+      "Images/460355975_1044180807194026_2928826092189388217_n.jpg",
+      "Images/Picsart_24-10-12_16-05-14-369.png",
+      "Images/Picsart_24-10-12_15-59-45-546.png",
+    ];
 
-    return Row(
-      mainAxisAlignment: isLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
-      children: [
-        if (isLeft) ...[
-          _buildProductContainer(product, favoritesProvider),
-          const SizedBox(width: 10),
-          _buildProductDetails(product),
-        ] else ...[
-          _buildProductDetails(product),
-          const SizedBox(width: 10),
-          _buildProductContainer(product, favoritesProvider),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        children: brandLogos.map((logo) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.red, width: logo.contains("brand2") ? 2 : 0), // Apply border to one logo
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: CircleAvatar(
+                radius: 35,
+                backgroundColor: Colors.white,
+                backgroundImage: AssetImage(logo),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildProductRow(Product product, int index, FavoritesProvider favoritesProvider) {
+    bool isLeft = index % 2 == 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Row(
+        mainAxisAlignment: isLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
+        children: [
+          if (isLeft) ...[
+            _buildProductContainer(product, favoritesProvider),
+            const SizedBox(width: 10),
+            _buildProductDetails(product),
+          ] else ...[
+            _buildProductDetails(product),
+            const SizedBox(width: 10),
+            _buildProductContainer(product, favoritesProvider),
+          ],
         ],
-      ],
+      ),
     );
   }
 
   Widget _buildProductContainer(Product product, FavoritesProvider favoritesProvider) {
     bool isFavorite = favoritesProvider.favoriteProducts.contains(product);
 
-    return Container(
-      height: 180,
-      width: 150,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Productsdetails(product: product)),
-          );
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 150,
+        height: 200,
+        child: Stack(
+          alignment: Alignment.topRight,
           children: [
-           // Image.network(product.imagePath, height: 125, width: 120, fit: BoxFit.cover),
-
-            Image.asset('Images/Screenshot 2024-04-30 191728.png', height: 125, width: 120, fit: BoxFit.cover),
-            const SizedBox(height: 5),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  if (isFavorite) {
-                    favoritesProvider.removeFavorite(product);
-                  } else {
-                    favoritesProvider.addFavorite(product);
-                  }
-                });
-              },
-              icon: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : Colors.black,
+            Image.network(
+              product.image,
+              width: double.infinity,
+              height: 180,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image, size: 60, color: Colors.grey),
+            ),
+            Positioned(
+              child: IconButton(
+                onPressed: () {
+                  setState(() {
+                    if (isFavorite) {
+                      favoritesProvider.removeFavorite(product);
+                    } else {
+                      favoritesProvider.addFavorite(product);
+                    }
+                  });
+                },
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.black,
+                ),
               ),
-              constraints: BoxConstraints(),
-              padding: EdgeInsets.zero,
             ),
           ],
         ),
@@ -154,13 +189,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   Widget _buildProductDetails(Product product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        Text('${product.price.toStringAsFixed(2)} EGP'), // Ensure it's displayed correctly
+        Text(
+          product.name,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          "LE ${product.price.toStringAsFixed(2)}",
+          style: const TextStyle(color: Colors.black, fontSize: 12),
+        ),
       ],
     );
   }

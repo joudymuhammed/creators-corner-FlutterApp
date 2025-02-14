@@ -1,10 +1,7 @@
 import 'package:creators_corner/main.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../Models/OrderModel.dart';
-import '../Provider/OrderProvider.dart';
-import 'Home.dart'; // Adjust the import based on your structure
+
 
 class CheckOutScreen extends StatelessWidget {
   final TextEditingController addressTitleController = TextEditingController();
@@ -217,15 +214,7 @@ class CheckOutScreen extends StatelessWidget {
                               ),
                               onPressed: () {
                                 // Create an order object
-                                final order = Order(
-                                  orderId: DateTime.now().millisecondsSinceEpoch.toString(), // Unique ID
-                                  productName: addressTitleController.text, // You can customize this
-                                  price: "LE 0.00 EGP", // Set a default price or calculate it
-                                  status: "Pending", // Default status
-                                );
-
                                 // Add the order to the provider
-                                Provider.of<OrdersProvider>(context, listen: false).addOrder(order);
 
                                 // Navigate to the Orders page or any other page
                                 Navigator.push(

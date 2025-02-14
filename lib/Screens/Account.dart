@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../Provider/LoginProvider.dart';
 import '../Provider/favProvider.dart';
 import 'AccountScreens/Customer Service/CustomerService.dart';
 import 'AccountScreens/LoginAndSecurity.dart';
@@ -11,7 +12,7 @@ import 'AccountScreens/Favourits.dart';
 class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final favoritesProvider = Provider.of<FavoritesProvider>(context); // Access the provider
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
 
     final List<Map<String, dynamic>> listItems = [
       {"title": "Your Orders", 'subtitle': "Track, return, cancel an order.", "image": "Images/orders.jpg", "page": OrdersPage()},
@@ -21,6 +22,8 @@ class AccountScreen extends StatelessWidget {
       {"title": "Login & security", 'subtitle': "Manage your login and security settings.", "image": "Images/Security1.png", "page": LoginAndSecurityPage()},
       {"title": "Customer Service", 'subtitle': "Contact support, browse help articles, and resolve issues.", "image": "Images/CustServ.png", "page": CustomerServicePage()},
     ];
+
+    final loginProvider = Provider.of<LoginProvider>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -37,7 +40,9 @@ class AccountScreen extends StatelessWidget {
                   backgroundImage: NetworkImage("https://via.placeholder.com/150"),
                 ),
                 SizedBox(width: 20),
-                Text("Name", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26)),
+                Text(
+                    "Name",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26)),
               ],
             ),
           ),
@@ -56,13 +61,8 @@ class AccountScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FavouritesPage(favoriteProducts: [], ),
+                          builder: (context) => FavouritesPage(),
                         ),
-                      );
-                    } else if (listItems[index]["title"] == "Your Orders") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OrdersPage()), // Navigate to OrdersPage
                       );
                     } else {
                       Navigator.push(
@@ -71,6 +71,7 @@ class AccountScreen extends StatelessWidget {
                       );
                     }
                   },
+
                   child: Padding(
                     padding: const EdgeInsets.only(left: 7, right: 7, bottom: 37),
                     child: Container(
