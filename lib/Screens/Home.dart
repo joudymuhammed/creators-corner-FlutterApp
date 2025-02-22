@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data'; // ✅ Correct Import
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Component/bottom.dart';
@@ -36,43 +39,41 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         centerTitle: true,
       ),
-      body: Container(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            Image.asset("Images/Super_Stars-removebg.png", height: 100),
-            _buildSearchBar(),
-            const SizedBox(height: 10),
-            _buildBrandRow(),
-            const SizedBox(height: 15),
-            Expanded(
-              child: FutureBuilder<List<Product>>(
-                future: _futureProducts,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text("Error: ${snapshot.error}"));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("No products available"));
-                  }
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          Image.asset("Images/Super_Stars-removebg.png", height: 100),
+          _buildSearchBar(),
+          const SizedBox(height: 10),
+          _buildBrandRow(),
+          const SizedBox(height: 15),
+          Expanded(
+            child: FutureBuilder<List<Product>>(
+              future: _futureProducts,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text("No products available"));
+                }
 
-                  List<Product> products = snapshot.data!;
+                List<Product> products = snapshot.data!;
 
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for (int i = 0; i < products.length; i++)
-                          _buildProductRow(products[i], i, favoritesProvider),
-                        Bottom(),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < products.length; i++)
+                        _buildProductRow(products[i], i, favoritesProvider),
+                      Bottom(),
+                    ],
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -111,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.red, width: logo.contains("brand2") ? 2 : 0), // Apply border to one logo
+                border: Border.all(color: Colors.red, width: logo.contains("brand2") ? 2 : 0),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: CircleAvatar(
@@ -135,13 +136,33 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: isLeft ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
           if (isLeft) ...[
-            _buildProductContainer(product, favoritesProvider),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductsDetails(product: product),
+                  ),
+                );
+              },
+              child: _buildProductContainer(product, favoritesProvider),
+            ),
             const SizedBox(width: 10),
             _buildProductDetails(product),
           ] else ...[
             _buildProductDetails(product),
             const SizedBox(width: 10),
-            _buildProductContainer(product, favoritesProvider),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductsDetails(product: product),
+                  ),
+                );
+              },
+              child: _buildProductContainer(product, favoritesProvider),
+            ),
           ],
         ],
       ),
@@ -151,6 +172,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildProductContainer(Product product, FavoritesProvider favoritesProvider) {
     bool isFavorite = favoritesProvider.favoriteProducts.contains(product);
 
+    print("Product Image Data: ${product.image}"); // Debugging: Check API response
+
+    Uint8List? imageBytes;
+    if (product.image.isNotEmpty) {
+      try {
+        imageBytes = base64Decode(product.image); // Decode Base64
+      } catch (e) {
+        print("Error decoding image: $e");
+      }
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
@@ -159,22 +191,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Stack(
           alignment: Alignment.topRight,
           children: [
-            Image.network(
-              product.image,
-              width: double.infinity,
-              height: 180,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image, size: 60, color: Colors.grey),
-            ),
+            imageBytes != null
+                ? Image.memory(imageBytes, width: double.infinity, height: 180, fit: BoxFit.cover)
+                : Image.asset('assets/images/placeholder.png', width: double.infinity, height: 180, fit: BoxFit.cover),
             Positioned(
               child: IconButton(
                 onPressed: () {
                   setState(() {
-                    if (isFavorite) {
-                      favoritesProvider.removeFavorite(product);
-                    } else {
-                      favoritesProvider.addFavorite(product);
-                    }
+                    isFavorite
+                        ? favoritesProvider.removeFavorite(product)
+                        : favoritesProvider.addFavorite(product);
                   });
                 },
                 icon: Icon(

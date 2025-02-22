@@ -1,3 +1,4 @@
+// reg_provider.dart
 import 'package:flutter/material.dart';
 import '../Models/registerationModel.dart';
 import '../Services/RegisterationService.dart';
@@ -19,5 +20,4 @@ class RegProvider with ChangeNotifier {
 
     return success;
   }
-
 }

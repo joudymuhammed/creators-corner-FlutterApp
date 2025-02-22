@@ -18,95 +18,107 @@ class _SigninState extends State<Signin> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  bool _isPasswordVisible = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'Images/Super_Stars-removebg.png',
-                height: 160,
-              ),
-              SizedBox(height: 20),
-              Container(
-                width: 500,
-                child: Text(
-                  'Login',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+      body: SingleChildScrollView( // Added this
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 60), // Added spacing to avoid content being hidden
+                Image.asset(
+                  'Images/Super_Stars-removebg.png',
+                  height: 160,
                 ),
-              ),
-              Container(
-                width: 500,
-                child: Text(
-                  'Please sign in to continue.',
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                SizedBox(height: 20),
+                Container(
+                  width: 500,
+                  child: Text(
+                    'Login',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                 ),
-                validator: (value) => value!.isEmpty ? 'Username is required' : null,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: Icon(Icons.remove_red_eye),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                Container(
+                  width: 500,
+                  child: Text(
+                    'Please sign in to continue.',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
                 ),
-                obscureText: true,
-                validator: (value) => value!.isEmpty ? 'Password is required' : null,
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Signupcollab(),
-                          ));
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 17),
-                      child: Text('Local brand?'),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ForgetPasswordScreen(),
-                          ));
-                    },
-                    child: Text('Forget password?'),
+                  validator: (value) => value!.isEmpty ? 'Username is required' : null,
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Consumer<LoginProvider>(
-                builder: (context, authProvider, child) {
+                  validator: (value) => value!.isEmpty ? 'Password is required' : null,
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Signupcollab(),
+                            ));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 17),
+                        child: Text('Local brand?'),
+                      ),
+                    ),
+                    Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ForgetPasswordScreen(),
+                            ));
+                      },
+                      child: Text('Forget password?'),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Consumer<LoginProvider>(builder: (context, authProvider, child) {
                   return authProvider.isLoading
                       ? CircularProgressIndicator()
                       : Container(
@@ -154,35 +166,37 @@ class _SigninState extends State<Signin> {
                       ),
                     ),
                   );
-                },
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Don\'t have an account?',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterPage(),
-                          ));
-                    },
-                    child: Text(
-                      ' Sign up',
-                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                }),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Don\'t have an account?',
+                      style: TextStyle(color: Colors.grey),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegisterPage(),
+                            ));
+                      },
+                      child: Text(
+                        ' Sign up',
+                        style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30), // Added space to prevent content from being blocked by the keyboard
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
 }

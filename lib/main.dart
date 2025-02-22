@@ -14,19 +14,27 @@ import 'Screens/Search.dart';
 import 'Screens/Signin.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
+import 'Services/MyCartService.dart';
 
 //
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  final Dio dio = Dio(); // Create Dio instance
+
+  final CartService cartService = CartService(dio); // Initialize CartService
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider(cartService)),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (context) => ProductProvider(),),
         ChangeNotifierProvider(create: (context) => RegProvider() ,),
-        ChangeNotifierProvider(create: (context) => LoginProvider() ,)
+        ChangeNotifierProvider(create: (context) => LoginProvider() ,),
+        ChangeNotifierProvider(create: (context) => OrderProvider()),
+
 
       ],
       child: MyApp(),

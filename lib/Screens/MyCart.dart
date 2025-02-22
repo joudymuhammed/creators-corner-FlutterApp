@@ -1,11 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Component/Item.dart';
 import '../Screens/CheckOut.dart';
 import '../Provider/CartProvider.dart';
 
-class MyCart extends StatelessWidget {
+class MyCart extends StatefulWidget {
   const MyCart({Key? key}) : super(key: key);
+
+  @override
+  _MyCartState createState() => _MyCartState();
+}
+
+class _MyCartState extends State<MyCart> {
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchCartItems();
+    });
+  }
+
+  Future<void> _fetchCartItems() async {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final preferences = await SharedPreferences.getInstance();
+    int? customerId = preferences.getInt("customerId");
+
+    if (customerId != null) {
+      await cartProvider.fetchCartItems(customerId);
+    } else {
+      print("❌ Error: No logged-in customer ID found!");
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +54,14 @@ class MyCart extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
       ),
-      body: Column(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         children: [
-          Image.asset("Images/Super_Stars-removebg.png", width: 160, height: 140),
+          Image.asset("Images/Super_Stars-removebg.png",
+              width: 160, height: 140, errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.image_not_supported, size: 50, color: Colors.grey);
+              }),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -62,12 +99,10 @@ class MyCart extends StatelessWidget {
               onPressed: cartItems.isEmpty
                   ? null
                   : () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CheckOutScreen()));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => CheckOutScreen()));
               },
-              child: const Text(
-                "CHECKOUT ALL",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text("CHECKOUT ALL", style: TextStyle(color: Colors.white)),
             ),
           ),
         ],

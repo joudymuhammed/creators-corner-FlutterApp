@@ -39,37 +39,45 @@ class _EditCartState extends State<EditCart> {
         title: Text("${widget.brand} Cart"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Product Image
-                Image.network(
-                  widget.image,
-                  width: 100,
-                  height: 100,
+                // 🛠️ FIX: Constrained the image size to prevent overflow
+                SizedBox(
+                  width: 80, // Adjusted width
+                  height: 80, // Adjusted height
+                  child: Image.network(
+                    widget.image,
+                    fit: BoxFit.cover, // Keeps the image contained
+                  ),
                 ),
-                const SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.name,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.name,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis, // Prevents text overflow
+                        maxLines: 1,
                       ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      widget.price,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(height: 5),
+                      Text(
+                        widget.price,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -100,50 +108,63 @@ class _EditCartState extends State<EditCart> {
               ],
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(9.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(color: Color(0xffFF5454)),
+            SizedBox(
+              width: double.infinity, // Ensures the row doesn't overflow
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(9.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: Color(0xffFF5454)),
+                          ),
                         ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CustomBottomNavBar(),));
-                      },
-                      child: Text(
-                        "Add items",
-                        style: TextStyle(color: Color(0xffFF5454)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CustomBottomNavBar(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Add items",
+                          style: TextStyle(color: Color(0xffFF5454)),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(9.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffFF5454),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(9.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xffFF5454),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CheckOutScreen(),));
-                      },
-                      child: Text(
-                        "Checkout",
-                        style: TextStyle(color: Colors.white),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CheckOutScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Checkout",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

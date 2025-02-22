@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Provider/LoginProvider.dart';
 import '../Provider/favProvider.dart';
 import 'AccountScreens/Customer Service/CustomerService.dart';
@@ -9,7 +10,27 @@ import 'AccountScreens/Payment.dart';
 import 'AccountScreens/chat/Chat.dart';
 import 'AccountScreens/Favourits.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
+  @override
+  _AccountScreenState createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
+  String? username;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    final preferences = await SharedPreferences.getInstance();
+    setState(() {
+      username = preferences.getString('customerUsername') ?? 'Guest';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final favoritesProvider = Provider.of<FavoritesProvider>(context);
@@ -17,13 +38,11 @@ class AccountScreen extends StatelessWidget {
     final List<Map<String, dynamic>> listItems = [
       {"title": "Your Orders", 'subtitle': "Track, return, cancel an order.", "image": "Images/orders.jpg", "page": OrdersPage()},
       {"title": "Favorites", 'subtitle': "Your preferred products in one place.", "image": "Images/favorite.png"},
-      {"title": "Messages", 'subtitle': "View and respond to your messages.", "image": "Images/coloredMsg.png", "page":ChatListScreen()},
+      {"title": "Messages", 'subtitle': "View and respond to your messages.", "image": "Images/coloredMsg.png", "page": ChatListScreen()},
       {"title": "Payments", 'subtitle': "Manage your payment methods and settings.", "image": "Images/payment1.jpg", "page": PaymentPage()},
       {"title": "Login & security", 'subtitle': "Manage your login and security settings.", "image": "Images/Security1.png", "page": LoginAndSecurityPage()},
       {"title": "Customer Service", 'subtitle': "Contact support, browse help articles, and resolve issues.", "image": "Images/CustServ.png", "page": CustomerServicePage()},
     ];
-
-    final loginProvider = Provider.of<LoginProvider>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -35,14 +54,15 @@ class AccountScreen extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  child: Icon(Icons.account_circle_rounded,),
+                  child: Icon(Icons.account_circle_rounded),
                   radius: 26,
                   backgroundImage: NetworkImage("https://via.placeholder.com/150"),
                 ),
                 SizedBox(width: 20),
                 Text(
-                    "Name",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26)),
+                  username ?? "Loading...", // عرض الاسم
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+                ),
               ],
             ),
           ),

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 import '../Models/ProductsModel.dart';
 import '../Provider/CartProvider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Services/MyCartService.dart';
 
 class ProductsDetails extends StatefulWidget {
   final Product product;
@@ -15,11 +19,20 @@ class ProductsDetails extends StatefulWidget {
 class _ProductsDetailsState extends State<ProductsDetails> {
   int quantity = 1;
   String? selectedSize;
+  bool isAddingToCart = false;
+
+  Future<String?> getCustomerId() async {
+    final preferences = await SharedPreferences.getInstance();
+    int? customerId = preferences.getInt('customerId');
+    return customerId?.toString();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-
+    final cartService = CartService(Dio());
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -102,25 +115,48 @@ class _ProductsDetailsState extends State<ProductsDetails> {
                   backgroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                onPressed: () {
-                  if (selectedSize == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please select a size."), backgroundColor: Colors.red),
-                    );
-                    return;
-                  }
+                  onPressed: isAddingToCart ? null : () async {
+                    if (selectedSize == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please select a size."), backgroundColor: Colors.red),
+                      );
+                      return;
+                    }
 
-                  cartProvider.addToCart(
-                    product: widget.product,
-                    quantity: quantity,
-                    size: selectedSize!,
-                  );
+                    String? customerId = await getCustomerId();
+                    if (customerId == null || customerId.isEmpty) {
+                      print("❌ User not logged in");
+                      return;
+                    }
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Added to cart."), backgroundColor: Colors.green),
-                  );
-                },
-                child: const Text('Add to cart', style: TextStyle(color: Colors.white)),
+                    setState(() {
+                      isAddingToCart = true;
+                    });
+
+                    try {
+                      await cartService.addItemToCart(customerId, widget.product.id.toString());
+
+                      cartProvider.addToCart(
+                        product: widget.product,
+                        quantity: quantity,
+                        size: selectedSize!,
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Added to cart."), backgroundColor: Colors.green),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Failed to add to cart"), backgroundColor: Colors.red),
+                      );
+                    } finally {
+                      setState(() {
+                        isAddingToCart = false;
+                      });
+                    }
+                  },
+
+                  child: const Text('Add to cart', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),

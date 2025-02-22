@@ -1,5 +1,10 @@
+import 'package:creators_corner/Screens/MyCart.dart';
 import 'package:creators_corner/main.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../Provider/OrderProvider.dart';
+import 'AccountScreens/Orders.dart';
 
 
 
@@ -15,6 +20,7 @@ class CheckOutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(surfaceTintColor: Colors.red, toolbarHeight:35, leading: IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => MyCart()));}, icon:Icon(Icons.arrow_back_outlined) ),),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -212,23 +218,28 @@ class CheckOutScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              onPressed: () {
-                                // Create an order object
-                                // Add the order to the provider
+                              onPressed: () async {
+                                final preferences = await SharedPreferences.getInstance();
+                                int? customerId = preferences.getInt("customerId");
 
-                                // Navigate to the Orders page or any other page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CustomBottomNavBar(), // Adjust as needed
-                                  ),
-                                );
+                                if (customerId != null) {
+                                  final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+                                  await orderProvider.checkoutOrder(customerId);
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => CustomBottomNavBar()),
+                                  );
+                                } else {
+                                  print("❌ No customer ID found!");
+                                }
                               },
                               child: Text(
                                 "Save",
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
+
                           ],
                         ),
                       ),

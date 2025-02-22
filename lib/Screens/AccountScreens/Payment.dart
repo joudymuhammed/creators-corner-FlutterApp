@@ -18,7 +18,6 @@ class PaymentPage extends StatelessWidget {
               subtitle: "Add a credit or debit card",
               icon: Icons.add_card,
               onTap: () {
-                // Navigate to add payment method screen
               },
             ),
             _buildPaymentMethodCard(
@@ -26,7 +25,6 @@ class PaymentPage extends StatelessWidget {
               subtitle: "Manage your saved cards",
               icon: Icons.credit_card,
               onTap: () {
-                // Navigate to manage cards screen
               },
             ),
             _buildPaymentMethodCard(
@@ -34,7 +32,6 @@ class PaymentPage extends StatelessWidget {
               subtitle: "Link your PayPal account",
               icon: Icons.paypal,
               onTap: () {
-                // Navigate to PayPal linking screen
               },
             ),
             _buildPaymentMethodCard(
@@ -42,7 +39,6 @@ class PaymentPage extends StatelessWidget {
               subtitle: "View your transaction history",
               icon: Icons.history,
               onTap: () {
-                // Navigate to payment history screen
               },
             ),
             SizedBox(height: 20),

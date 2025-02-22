@@ -1,11 +1,12 @@
+// user_model.dart
 class User {
-  final String name;
-  final String email;
-  final String address;
-  final String password;
-  final String username;
-  final String phoneNumber;
-  final String imageUrl;
+  String name;
+  String email;
+  String address;
+  String password;
+  String username;
+  String phoneNumber;
+  String? image; // Image in Base64 format
 
   User({
     required this.name,
@@ -14,18 +15,18 @@ class User {
     required this.password,
     required this.username,
     required this.phoneNumber,
-    required this.imageUrl
+    this.image,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      "name": name,
-      "email": email,
-      "address": address,
-      "password": password,
-      "username": username,
-      "phoneNumber": phoneNumber,
-      "ImageUrl":imageUrl
+      'name': name,
+      'email': email,
+      'address': address,
+      'password': password,
+      'username': username,
+      'phoneNumber': phoneNumber,
+      'image': image, // Add image path to JSON
     };
   }
 }

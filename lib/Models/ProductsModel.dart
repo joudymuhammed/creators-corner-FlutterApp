@@ -19,13 +19,13 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      price: json['price'],
-      image: json['imageUrl'],
-      stockQuantity: json['stockQuantity'],
-      brandId: json['brandId'],
+      id: json['id'] ?? 0,  // Default to 0 if null
+      name: json['name'] ?? 'Unknown',  // Default name
+      description: json['description'] ?? 'No description',
+      price: json['price'] ?? 0.0, // Default to 0 if null
+      image: json['imageUrl'] ?? '', // Avoid null errors in Image.network
+      stockQuantity: json['stockQuantity'] ?? 0,
+      brandId: json['brandId'] ?? 0,
     );
   }
 }
